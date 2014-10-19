@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php55Memcached < AbstractPhp55Extension
   init
@@ -8,12 +8,18 @@ class Php55Memcached < AbstractPhp55Extension
   head 'https://github.com/php-memcached-dev/php-memcached.git'
 
   option 'with-igbinary', "Build with igbinary support"
-  depends_on 'libmemcached'
-  depends_on 'php55-igbinary' if build.include?('with-igbinary')
+  option 'with-sasl', "Build with sasl support"
+  if build.with? "sasl"
+    depends_on "libmemcached" => "with-sasl"
+  else
+    depends_on "libmemcached"
+  end
+  depends_on 'php55-igbinary' if build.with? "igbinary"
 
-  def patches
+  patch do
     # adapt to libmemcached >= 1.0.9 new instance API (source: paravoid/php-memcached 37069e18ad399a8cc03d5fe9757e1481814ecb44)
-    "https://gist.github.com/ablyler/6331007/raw/"
+    url "https://gist.githubusercontent.com/ablyler/6331007/raw/409ef282616859b2a7d19ba703c9b736576db16e/libmemcache-new-instance-api.patch"
+    sha1 "bc958b0d50b7a260c13dc71451e6c35c08bc7c35"
   end
 
   def install
@@ -24,19 +30,20 @@ class Php55Memcached < AbstractPhp55Extension
     args = []
     args << "--prefix=#{prefix}"
     args << phpconfig
-    args << "--with-libmemcached-dir=#{Formula.factory('libmemcached').opt_prefix}"
-    args << "--enable-memcached-igbinary" if build.include? 'with-igbinary'
+    args << "--with-libmemcached-dir=#{Formula['libmemcached'].opt_prefix}"
+    args << "--enable-memcached-igbinary" if build.with? 'igbinary'
+    args << "--enable-memcached-sasl" if build.with? 'sasl'
 
     safe_phpize
 
-    if build.include? 'with-igbinary'
+    if build.with? 'igbinary'
       system "mkdir -p ext/igbinary"
-      cp "#{Formula.factory('php55-igbinary').opt_prefix}/include/igbinary.h", "ext/igbinary/igbinary.h"
+      cp "#{Formula['php55-igbinary'].opt_prefix}/include/igbinary.h", "ext/igbinary/igbinary.h"
     end
 
     system "./configure", *args
     system "make"
     prefix.install "modules/memcached.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 end

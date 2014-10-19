@@ -6,21 +6,17 @@ class Phplint < Formula
   sha256 '30620b170315e9b9df1f69fdf809a1ec0e4829263e7b9949d88ab22b4ce80388'
   version '1.1-20130803'
   fails_with :clang do
-    build 500
+    # See: http://www.icosaedro.it/phplint/download.html (Note 1)
     cause 'Clang which does not support nested functions. Use gcc instead.'
   end
 
-  def patches
-    # Rationale: The ./configure tosses up errors that can be ignored, but homebrew
-    #     still catches them, so I've just patched in the file that gets created.
-    #     As for phpl, it's useful because it includes the default modules with
-    #     --modules-path, but the default options are WAY too verbose.
-    DATA
-  end
+  # Rationale: The ./configure tosses up errors that can be ignored, but homebrew
+  #     still catches them, so I've just patched in the file that gets created.
+  #     As for phpl, it's useful because it includes the default modules with
+  #     --modules-path, but the default options are WAY too verbose.
+  patch :DATA
 
   def install
-    ENV.gcc
-    # See: http://www.icosaedro.it/phplint/download.html (Note 1)
     system "#{ENV.cc} -fnested-functions src/phplint.c -o src/phplint"
     bin.install 'src/phplint'
     bin.install 'phpl'

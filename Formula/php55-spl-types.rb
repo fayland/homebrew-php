@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php55SplTypes < AbstractPhp55Extension
   init
@@ -15,6 +15,10 @@ class Php55SplTypes < AbstractPhp55Extension
     system "./configure", "--prefix=#{prefix}", phpconfig
     system "make"
     prefix.install "modules/spl_types.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
+  end
+
+  def extension
+    'spl_types'
   end
 end

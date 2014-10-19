@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php55Zmq < AbstractPhp55Extension
   init
@@ -13,11 +13,15 @@ class Php55Zmq < AbstractPhp55Extension
   def install
     ENV.universal_binary if build.universal?
 
+    inreplace "package.xml", "@PACKAGE_VERSION@", version
+    inreplace "php-zmq.spec", "@PACKAGE_VERSION@", version
+    inreplace "php_zmq.h", "@PACKAGE_VERSION@", version
+
     safe_phpize
     system "./configure", "--prefix=#{prefix}",
                           phpconfig
     system "make"
     prefix.install "modules/zmq.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 end

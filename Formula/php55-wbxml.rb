@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php55Wbxml < AbstractPhp55Extension
   init
@@ -9,10 +9,8 @@ class Php55Wbxml < AbstractPhp55Extension
 
   depends_on 'libwbxml'
 
-  def patches
-    # php-wbxml looks for the libwbxml headers in the wrong location
-    DATA
-  end
+  # php-wbxml looks for the libwbxml headers in the wrong location
+  patch :DATA
 
   def install
     Dir.chdir "wbxml-#{version}" unless build.head?
@@ -22,10 +20,10 @@ class Php55Wbxml < AbstractPhp55Extension
     safe_phpize
     system "./configure", "--prefix=#{prefix}",
                           phpconfig,
-                          "--with-wbxml=#{Formula.factory('libwbxml').opt_prefix}"
+                          "--with-wbxml=#{Formula['libwbxml'].opt_prefix}"
     system "make"
     prefix.install "modules/wbxml.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 end
 

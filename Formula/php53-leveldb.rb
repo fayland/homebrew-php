@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php53Leveldb < AbstractPhp53Extension
   init
@@ -17,12 +17,12 @@ class Php53Leveldb < AbstractPhp53Extension
     args = []
     args << "--prefix=#{prefix}"
     args << phpconfig
-    args << "--with-leveldb=#{Formula.factory('leveldb').opt_prefix}"
+    args << "--with-leveldb=#{Formula['leveldb'].opt_prefix}"
 
     safe_phpize
     system "./configure", *args
     system "make"
     prefix.install "modules/leveldb.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 end

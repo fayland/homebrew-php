@@ -2,18 +2,15 @@ require 'formula'
 
 class Phpmyadmin < Formula
   homepage 'http://www.phpmyadmin.net'
-  url 'http://downloads.sourceforge.net/project/phpmyadmin/phpMyAdmin/4.0.10/phpMyAdmin-4.0.10-all-languages.tar.gz'
-  sha1 '658920683ea2e0042d325379b1228dc55a2fc719'
+  url 'https://github.com/phpmyadmin/phpmyadmin/archive/RELEASE_4_2_8.tar.gz'
+  sha256 'e284cda96efc6d5ff68fca41891f9cdc1a6975da6207a6c09b98c5f276212233'
   head 'https://github.com/phpmyadmin/phpmyadmin.git'
 
-  if build.include?('without-mcrypt') && MacOS.prefer_64_bit?
-    raise "64-bit machines cannot use phpmyadmin without mcrypt"
-  end
-
-  unless build.include? 'without-mcrypt'
-    depends_on "php53-mcrypt" if Formula.factory("php53").linked_keg.exist?
-    depends_on "php54-mcrypt" if Formula.factory("php54").linked_keg.exist?
-    depends_on "php55-mcrypt" if Formula.factory("php55").linked_keg.exist?
+  if build.with? 'mcrypt'
+    depends_on "php53-mcrypt" if Formula['php53'].linked_keg.exist?
+    depends_on "php54-mcrypt" if Formula['php54'].linked_keg.exist?
+    depends_on "php55-mcrypt" if Formula['php55'].linked_keg.exist?
+    depends_on "php56-mcrypt" if Formula['php56'].linked_keg.exist?
   end
 
   unless MacOS.prefer_64_bit?
@@ -22,6 +19,11 @@ class Phpmyadmin < Formula
 
   def install
     (share+'phpmyadmin').install Dir['*']
+
+    if !(File.exists?(etc+'phpmyadmin.config.inc.php'))
+      cp (share+'phpmyadmin/config.sample.inc.php'), (etc+'phpmyadmin.config.inc.php')
+    end
+    ln_s (etc+'phpmyadmin.config.inc.php'), (share+'phpmyadmin/config.inc.php')
   end
 
   def caveats; <<-EOS.undent
@@ -42,7 +44,8 @@ class Phpmyadmin < Formula
 
     More documentation : file://#{share}/phpmyadmin/doc/
 
-    Don't forget to copy config.sample.inc.php to config.inc.php and :
+    Configuration has been copied to #{etc}/phpmyadmin.config.inc.php
+    Don't forget to:
       - change your secret blowfish
       - uncomment the configuration lines (pma, pmapass ...)
 

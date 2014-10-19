@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php54Raphf < AbstractPhp54Extension
   init
@@ -7,7 +7,7 @@ class Php54Raphf < AbstractPhp54Extension
   sha1 'ba1528c32a4fb1f632da321f67875d3be6322ce1'
 
   def install
-    Dir.chdir "raphf-#{version}" unless build.head?
+    Dir.chdir "raphf-#{version}"
 
     ENV.universal_binary if build.universal?
 
@@ -15,7 +15,8 @@ class Php54Raphf < AbstractPhp54Extension
     system "./configure", "--prefix=#{prefix}",
                           phpconfig
     system "make"
+    include.install %w(php_raphf.h)
     prefix.install "modules/raphf.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 end

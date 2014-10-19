@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php54Svm < AbstractPhp54Extension
   init
@@ -16,6 +16,6 @@ class Php54Svm < AbstractPhp54Extension
                           phpconfig
     system "make"
     prefix.install "modules/svm.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 end

@@ -1,10 +1,10 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php53Xdebug < AbstractPhp53Extension
   init
   homepage 'http://xdebug.org'
-  url 'http://xdebug.org/files/xdebug-2.2.3.tgz'
-  sha1 '045dee86f69051d7944da594db648b337a97f48a'
+  url 'http://xdebug.org/files/xdebug-2.2.5.tgz'
+  sha1 '62d388e07a45cab9eee498e7905c92a7e5d023cc'
   head 'https://github.com/xdebug/xdebug.git'
 
   def extension_type; "zend_extension"; end
@@ -22,6 +22,6 @@ class Php53Xdebug < AbstractPhp53Extension
                           "--enable-xdebug"
     system "make"
     prefix.install "modules/xdebug.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 end

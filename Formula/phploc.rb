@@ -1,6 +1,6 @@
 require 'formula'
-require File.expand_path("../../Requirements/php-meta-requirement", Pathname.new(__FILE__).realpath)
-require File.expand_path("../../Requirements/phar-requirement", Pathname.new(__FILE__).realpath)
+require File.expand_path("../../Requirements/php-meta-requirement", __FILE__)
+require File.expand_path("../../Requirements/phar-requirement", __FILE__)
 
 class Phploc < Formula
   homepage 'https://github.com/sebastianbergmann/phploc'
@@ -18,7 +18,7 @@ class Phploc < Formula
     bin.install_symlink sh
   end
 
-  def test
+  test do
     system 'phploc --version'
   end
 

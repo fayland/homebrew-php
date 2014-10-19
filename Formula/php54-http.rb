@@ -1,17 +1,19 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php54Http < AbstractPhp54Extension
   init
   homepage 'http://pecl.php.net/package/pecl_http'
-  url 'http://pecl.php.net/get/pecl_http-1.7.6.tgz'
-  sha1 '44e28b6d2d9d352c5b949f14bc4dd612e4365c85'
-  head 'http://svn.php.net/repository/pecl/http/trunk/'
+  url 'http://pecl.php.net/get/pecl_http-2.1.2.tgz'
+  sha1 'fc583c6f06fe03d9be299aabfa7493ffe6afa63c'
+  head 'https://git.php.net/repository/pecl/http/pecl_http.git'
 
-  devel do
-    url 'http://pecl.php.net/get/pecl_http-2.0.0beta4.tgz'
-    version '2.0.0beta4'
-    sha1 'f15a7494561c8be16df72a94386c0501a02dbeaa'
-  end
+  depends_on 'curl' => :build
+  depends_on 'libevent' => :build
+  depends_on 'php54-raphf'
+  depends_on 'php54-propro'
+
+  # overwrite the config file name to ensure extension is loaded after dependencies
+  def config_filename; "zzz_ext-" + extension + ".ini"; end
 
   def install
     Dir.chdir "pecl_http-#{version}" unless build.head?
@@ -19,10 +21,27 @@ class Php54Http < AbstractPhp54Extension
     ENV.universal_binary if build.universal?
 
     safe_phpize
+
+    # link in the raphf extension header
+    system "mkdir -p ext/raphf"
+    cp "#{Formula['php54-raphf'].opt_prefix}/include/php_raphf.h", "ext/raphf/php_raphf.h"
+
+    # link in the propro extension header
+    system "mkdir -p ext/propro"
+    cp "#{Formula['php54-propro'].opt_prefix}/include/php_propro.h", "ext/propro/php_propro.h"
+
     system "./configure", "--prefix=#{prefix}",
-                          phpconfig
+                          phpconfig,
+                          "--with-libevent-dir=#{Formula['libevent'].opt_prefix}",
+                          "--with-curl-dir=#{Formula['curl'].opt_prefix}"
     system "make"
     prefix.install "modules/http.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
+
+    # remove old configuration file
+    old_config_filepath = config_scandir_path / "ext-http.ini"
+    if File.exist?(old_config_filepath)
+      system "unlink " + old_config_filepath
+    end
   end
 end

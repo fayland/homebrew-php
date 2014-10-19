@@ -1,11 +1,11 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php54Mcrypt < AbstractPhp54Extension
   init
   homepage 'http://php.net/manual/en/book.mcrypt.php'
-  url 'http://www.php.net/get/php-5.4.23.tar.bz2/from/this/mirror'
-  sha1 '1ad25b03486742dba18134ce07111146805d930f'
-  version '5.4.23'
+  url PHP_SRC_TARBALL
+  sha256 PHP_CHECKSUM[:sha256]
+  version PHP_VERSION
 
   depends_on 'mcrypt'
 
@@ -18,9 +18,9 @@ class Php54Mcrypt < AbstractPhp54Extension
     system "./configure", "--prefix=#{prefix}",
                           phpconfig,
                           "--disable-dependency-tracking",
-                          "--with-mcrypt=#{Formula.factory('mcrypt').opt_prefix}"
+                          "--with-mcrypt=#{Formula['mcrypt'].opt_prefix}"
     system "make"
     prefix.install "modules/mcrypt.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 end

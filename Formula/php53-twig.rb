@@ -1,10 +1,10 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php53Twig < AbstractPhp53Extension
   init
   homepage 'http://twig.sensiolabs.org/'
-  url 'https://github.com/fabpot/Twig/archive/v1.13.2.tar.gz'
-  sha1 '231ee99dc313b38cfde60ca903777f98d40daf2f'
+  url 'https://github.com/fabpot/Twig/archive/v1.16.0.tar.gz'
+  sha1 '078d346665f30c32d0c33e19c8e8075b7955d156'
   head 'https://github.com/fabpot/Twig.git'
 
   def install
@@ -17,6 +17,6 @@ class Php53Twig < AbstractPhp53Extension
       system "make"
       prefix.install %w(modules/twig.so)
     end
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 end

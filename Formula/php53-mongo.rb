@@ -1,10 +1,10 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php53Mongo < AbstractPhp53Extension
   init
   homepage 'http://pecl.php.net/package/mongo'
-  url 'http://pecl.php.net/get/mongo-1.4.5.tgz'
-  sha1 'd9608822a3267f24748e9bdef5850e112f0ef54a'
+  url 'http://pecl.php.net/get/mongo-1.5.6.tgz'
+  sha1 '9cbd97c7c2e3a60e846db0316c8b7be410351a37'
   head 'https://github.com/mongodb/mongo-php-driver.git'
 
   def install
@@ -17,6 +17,6 @@ class Php53Mongo < AbstractPhp53Extension
                           phpconfig
     system "make"
     prefix.install "modules/mongo.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 end

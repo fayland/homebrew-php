@@ -1,33 +1,30 @@
 require 'formula'
-require File.expand_path("../../Requirements/php-meta-requirement", Pathname.new(__FILE__).realpath)
-require File.expand_path("../../Requirements/phar-requirement", Pathname.new(__FILE__).realpath)
-require File.expand_path("../../Requirements/phar-building-requirement", Pathname.new(__FILE__).realpath)
+require File.expand_path("../../Requirements/php-meta-requirement", __FILE__)
+require File.expand_path("../../Requirements/phar-requirement", __FILE__)
+require File.expand_path("../../Requirements/phar-building-requirement", __FILE__)
 
 class PhpCsFixer < Formula
   homepage 'http://cs.sensiolabs.org'
-  url 'https://github.com/fabpot/PHP-CS-Fixer/archive/v0.3.0.tar.gz'
-  sha1 '25a37d823e8a04e975d851b034cca4fcf517ed6f'
+  url 'https://github.com/fabpot/PHP-CS-Fixer/archive/v0.5.7.tar.gz'
+  sha1 '82fe00e47588294b7b556bfb975fe6299e69d886'
   head 'https://github.com/fabpot/PHP-CS-Fixer.git'
 
-  def self.init
-    depends_on PhpMetaRequirement
-    depends_on PharRequirement
-    depends_on PharBuildingRequirement
-    depends_on "composer"
-    depends_on "php53" if Formula.factory("php53").linked_keg.exist?
-    depends_on "php54" if Formula.factory("php54").linked_keg.exist?
-    depends_on "php55" if Formula.factory("php55").linked_keg.exist?
- end
-
-  init
+  depends_on PhpMetaRequirement
+  depends_on PharRequirement
+  depends_on PharBuildingRequirement
+  depends_on "composer"
+  depends_on "php53" if Formula['php53'].linked_keg.exist?
+  depends_on "php54" if Formula['php54'].linked_keg.exist?
+  depends_on "php55" if Formula['php55'].linked_keg.exist?
+  depends_on "php56" if Formula['php56'].linked_keg.exist?
 
   def install
     File.open("genphar.php", 'w') {|f| f.write(phar_stub) }
 
-    cmd = [
+    [
       "mkdir -p src",
       "rsync -a --exclude 'src' . src/",
-      "cd src && /usr/bin/env php -d allow_url_fopen=On -d detect_unicode=Off  #{Formula.factory('composer').libexec}/composer.phar install",
+      "cd src && /usr/bin/env php -d allow_url_fopen=On -d detect_unicode=Off  #{Formula['composer'].libexec}/composer.phar install",
       "cd src && sed -i '' '1d' php-cs-fixer",
       "php -f genphar.php",
     ].each { |c| `#{c}` }
@@ -39,7 +36,7 @@ class PhpCsFixer < Formula
     bin.install_symlink sh
   end
 
-  def test
+  test do
     system 'php-cs-fixer --version'
   end
 

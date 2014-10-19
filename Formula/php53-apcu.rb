@@ -1,13 +1,13 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php53Apcu < AbstractPhp53Extension
   init
   homepage 'http://pecl.php.net/package/apcu'
-  url 'http://pecl.php.net/get/apcu-4.0.2.tgz'
-  sha1 'dd8a2ed00304501318f678a7f5b7364af4fc7dcf'
+  url 'http://pecl.php.net/get/apcu-4.0.6.tgz'
+  sha1 'f4841f20b333638381b3180ffa1f66b69de1de0f'
   head 'https://github.com/krakjoe/apcu.git'
 
-  option 'with-apc-bc', "Wether APCu should provide APC full compatibility support"
+  option 'with-apc-bc', "Whether APCu should provide APC full compatibility support"
   depends_on 'pcre'
 
   def install
@@ -17,7 +17,7 @@ class Php53Apcu < AbstractPhp53Extension
 
     args = []
     args << "--enable-apcu"
-    args << "--enable-apc-bc" if build.include? 'with-apc-bc'
+    args << "--enable-apc-bc" if build.with? 'apc-bc'
 
     safe_phpize
 
@@ -26,7 +26,7 @@ class Php53Apcu < AbstractPhp53Extension
                           *args
     system "make"
     prefix.install "modules/apcu.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 
   def config_file

@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php53Apc < AbstractPhp53Extension
   init
@@ -14,10 +14,10 @@ class Php53Apc < AbstractPhp53Extension
 
   depends_on 'pcre'
 
-  def patches
+  stable do
     # fixes "Incorrect version tag: APC 3.1.10 shows 3.1.9"
     # https://bugs.php.net/bug.php?id=61695
-    DATA if version == '3.1.10'
+    patch :DATA
   end
 
   def install
@@ -31,7 +31,7 @@ class Php53Apc < AbstractPhp53Extension
                           "--enable-apc-pthreadmutex"
     system "make"
     prefix.install %w(modules/apc.so apc.php)
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 
   def config_file

@@ -1,10 +1,10 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php53Riak < AbstractPhp53Extension
   init
   homepage 'http://phpriak.bachpedersen.dk/'
-  url 'http://pecl.php.net/get/riak-1.0.0.tgz'
-  sha1 '47eb0a95e31a88f207a3ff9bc20f08454d65f926'
+  url 'http://pecl.php.net/get/riak-1.2.0.tgz'
+  sha1 'c48afd6482df5bd3520505edead26104e65955d1'
   head 'https://github.com/TriKaspar/php_riak.git'
 
   option 'with-riak', 'Also install Riak locally'
@@ -21,7 +21,7 @@ class Php53Riak < AbstractPhp53Extension
                           phpconfig
     system "make"
     prefix.install "modules/riak.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 
   def config_file
@@ -44,5 +44,5 @@ class Php53Riak < AbstractPhp53Extension
         brew install riak
 
     EOS
-   end
+  end
 end

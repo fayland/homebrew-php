@@ -1,10 +1,10 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php53Sundown < AbstractPhp53Extension
   init
   homepage 'http://pecl.php.net/package/sundown'
-  url 'http://pecl.php.net/get/sundown-0.3.9.tgz'
-  sha1 '27a5f0215e73b9270acc4c27bcfde187b68ea6d4'
+  url 'http://pecl.php.net/get/sundown-0.3.11.tgz'
+  sha1 'e905cf2cd3540480af598e971a3c37c769775351'
 
   def install
     Dir.chdir "sundown-#{version}"
@@ -15,6 +15,6 @@ class Php53Sundown < AbstractPhp53Extension
     system "./configure", "--prefix=#{prefix}", phpconfig
     system "make"
     prefix.install "modules/sundown.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 end

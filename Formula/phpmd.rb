@@ -1,12 +1,11 @@
 require 'formula'
-require File.expand_path("../../Requirements/php-meta-requirement", Pathname.new(__FILE__).realpath)
-require File.expand_path("../../Requirements/phar-requirement", Pathname.new(__FILE__).realpath)
+require File.expand_path("../../Requirements/php-meta-requirement", __FILE__)
+require File.expand_path("../../Requirements/phar-requirement", __FILE__)
 
 class Phpmd < Formula
   homepage 'http://phpmd.org'
   url 'http://static.phpmd.org/php/1.5.0/phpmd.phar'
   sha1 '4e64bd506afad7e9aa1b0c1f4216660395e347ac'
-  version '1.5.0'
 
   depends_on PhpMetaRequirement
   depends_on PharRequirement
@@ -19,7 +18,7 @@ class Phpmd < Formula
     bin.install_symlink sh
   end
 
-  def test
+  test do
     system 'phpmd'
   end
 

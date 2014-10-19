@@ -1,11 +1,11 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php55Pspell < AbstractPhp55Extension
   init
   homepage 'http://php.net/manual/en/book.pspell.php'
-  url 'http://www.php.net/get/php-5.5.7.tar.bz2/from/this/mirror'
-  sha1 'f32ccf1a2aa0592e2dcc151c89a7a811e53e0925'
-  version '5.5.7'
+  url PHP_SRC_TARBALL
+  sha256 PHP_CHECKSUM[:sha256]
+  version PHP_VERSION
 
   depends_on 'aspell'
 
@@ -18,9 +18,9 @@ class Php55Pspell < AbstractPhp55Extension
     system "./configure", "--prefix=#{prefix}",
                           phpconfig,
                           "--disable-debug",
-                          "--with-pspell=#{Formula.factory('aspell').opt_prefix}"
+                          "--with-pspell=#{Formula['aspell'].opt_prefix}"
     system "make"
     prefix.install "modules/pspell.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 end

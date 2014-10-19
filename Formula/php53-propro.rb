@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php53Propro < AbstractPhp53Extension
   init
@@ -14,7 +14,8 @@ class Php53Propro < AbstractPhp53Extension
     safe_phpize
     system "./configure", "--prefix=#{prefix}", phpconfig
     system "make"
+    include.install %w(php_propro.h)
     prefix.install "modules/propro.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 end

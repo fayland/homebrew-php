@@ -1,10 +1,10 @@
-require File.join(File.dirname(__FILE__), 'abstract-php-extension')
+require File.expand_path("../../Abstract/abstract-php-extension", __FILE__)
 
 class Php53Amqp < AbstractPhp53Extension
   init
   homepage 'http://pecl.php.net/package/amqp'
-  url 'http://pecl.php.net/get/amqp-1.3.0.tgz'
-  sha1 'c8174e86846363e12c3e4c9898993ca088b4279e'
+  url 'http://pecl.php.net/get/amqp-1.4.0.tgz'
+  sha1 '7a08ff1cf0368f2f61db360b3402ed8c45444e85'
   head 'http://svn.php.net/repository/pecl/amqp/trunk/'
 
   depends_on 'rabbitmq-c'
@@ -19,6 +19,6 @@ class Php53Amqp < AbstractPhp53Extension
                           phpconfig
     system "make"
     prefix.install "modules/amqp.so"
-    write_config_file unless build.include? "without-config-file"
+    write_config_file if build.with? "config-file"
   end
 end
